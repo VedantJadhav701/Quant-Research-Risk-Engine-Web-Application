@@ -15,7 +15,7 @@
     "lucide-react": "^0.468.0",
     "framer-motion": "^11.13.1",
     "react-plotly.js": "^2.6.0",
-    "plotly.js": "^2.35.2",
+    "plotly.js-basic-dist": "^2.35.2",
     "recharts": "^2.14.3",
     "clsx": "^2.1.1"
   },
