@@ -18,7 +18,7 @@ class DataIngestor:
         """
         try:
             logger.info(f"Fetching data for {ticker} from {start_date} to {end_date}")
-            df = yf.download(ticker, start=start_date, end=end_date)
+            df = yf.download(ticker, start=start_date, end=end_date, progress=False, threads=False)
             
             if df.empty:
                 raise ValueError(f"No data found for ticker {ticker}")

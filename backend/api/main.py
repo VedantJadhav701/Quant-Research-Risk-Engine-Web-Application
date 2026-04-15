@@ -24,8 +24,12 @@ app.add_middleware(
 pipeline = PipelineManager()
 
 # Temporary storage for uploads and results
-UPLOAD_DIR = "temp_uploads"
-os.makedirs(UPLOAD_DIR, exist_ok=True)
+# Vercel only allows writing to /tmp
+UPLOAD_DIR = "/tmp/uploads" if os.getenv("VERCEL") else "temp_uploads"
+try:
+    os.makedirs(UPLOAD_DIR, exist_ok=True)
+except Exception:
+    pass
 
 # Simple in-memory cache for results (in production, use Redis/DB)
 results_cache = {}
