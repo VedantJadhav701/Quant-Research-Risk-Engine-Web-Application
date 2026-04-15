@@ -1,5 +1,5 @@
-import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 
 const inter = Inter({
@@ -21,6 +21,10 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.variable} antialiased`}>
         {children}
+        <Script 
+          src="https://cdn.plot.ly/plotly-2.35.2.min.js" 
+          strategy="beforeInteractive"
+        />
       </body>
     </html>
   );
