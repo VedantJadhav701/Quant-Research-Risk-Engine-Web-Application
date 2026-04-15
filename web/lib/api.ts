@@ -1,7 +1,7 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 export interface AnalysisParams {
-  ticker: str;
+  ticker: string;
   start_date: string;
   end_date: string;
 }
