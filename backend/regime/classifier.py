@@ -1,8 +1,5 @@
 import pandas as pd
 import numpy as np
-from sklearn.cluster import KMeans
-from sklearn.decomposition import TruncatedSVD
-from sklearn.preprocessing import StandardScaler
 import logging
 
 logger = logging.getLogger(__name__)
@@ -10,12 +7,10 @@ logger = logging.getLogger(__name__)
 class RegimeClassifier:
     """
     Detects market regimes using SVD and KMeans.
+    Lightweight implementation (no scikit-learn) to save deployment space.
     """
     def __init__(self, n_regimes: int = 3):
         self.n_regimes = n_regimes
-        self.scaler = StandardScaler()
-        self.svd = TruncatedSVD(n_components=2)
-        self.kmeans = KMeans(n_clusters=n_regimes, random_state=42)
 
     def prepare_features(self, df: pd.DataFrame):
         """
@@ -31,25 +26,45 @@ class RegimeClassifier:
 
     def detect_regimes(self, df: pd.DataFrame):
         """
-        Runs the full regime detection pipeline.
-        Returns the original dataframe with a 'regime' label column.
+        Runs the full regime detection pipeline using manual numpy implementations.
         """
         features = self.prepare_features(df)
+        X = features.values
         
-        # Scaling
-        scaled_features = self.scaler.fit_transform(features)
+        # 1. Manual Scaling (Z-score)
+        mean = np.mean(X, axis=0)
+        std = np.std(X, axis=0)
+        std[std == 0] = 1.0 # Prevent division by zero
+        X_scaled = (X - mean) / std
         
-        # SVD for dimensionality reduction
-        reduced_features = self.svd.fit_transform(scaled_features)
+        # 2. Manual SVD (Dimensionality Reduction)
+        # We want first 2 components
+        U, S, Vh = np.linalg.svd(X_scaled, full_matrices=False)
+        reduced_features = U[:, :2] * S[:2]
         
-        # Clustering
-        regimes = self.kmeans.fit_predict(reduced_features)
+        # 3. Manual KMeans (Lloyd's Algorithm)
+        def manual_kmeans(data, k, max_iters=10):
+            # Deterministic seed for consistency
+            np.random.seed(42)
+            # Random initial centroids from data points
+            centroids = data[np.random.choice(data.shape[0], k, replace=False)]
+            
+            for _ in range(max_iters):
+                # Calculate distances to centroids
+                distances = np.linalg.norm(data[:, np.newaxis] - centroids, axis=2)
+                # Assign to closest centroid
+                labels = np.argmin(distances, axis=1)
+                # Calculate new centroids
+                new_centroids = np.array([data[labels == i].mean(axis=0) if np.any(labels == i) else centroids[i] for i in range(k)])
+                if np.allclose(centroids, new_centroids):
+                    break
+                centroids = new_centroids
+            return labels
+
+        regimes = manual_kmeans(reduced_features, self.n_regimes)
         
-        # Mapping regimes to human-readable labels based on characteristics
-        # Low Vol, High Vol, Trending
+        # Mapping regimes to human-readable labels
         regime_means = features.assign(regime=regimes).groupby('regime').mean()
-        
-        # Sort regimes by volatility to identify Low/High Vol
         sorted_by_vol = regime_means['volatility'].sort_values().index.tolist()
         
         label_map = {
@@ -58,7 +73,6 @@ class RegimeClassifier:
             sorted_by_vol[2]: 'High Volatility'
         }
         
-        # Re-map regimes
         df_with_regime = df.copy()
         df_with_regime['regime_numeric'] = np.nan
         df_with_regime.loc[features.index, 'regime_numeric'] = regimes

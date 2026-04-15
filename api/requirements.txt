@@ -3,9 +3,6 @@ pandas
 numpy
 scipy
 fastapi
-uvicorn
-streamlit
-plotly
 python-multipart
 pydantic
 python-dotenv
