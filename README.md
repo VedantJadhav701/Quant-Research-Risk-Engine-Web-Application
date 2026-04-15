@@ -57,6 +57,25 @@ streamlit run frontend/streamlit_app.py
 - `POST /upload`: Upload a custom CSV for analysis.
 - `GET /result/{id}`: Retrieve past analysis results.
 
+## 🚀 User Interface
+
+### Modern Dashboard (Next.js)
+The primary interface is a high-performance, responsive Next.js 14 dashboard located in the `/web` directory.
+- **Run Locally**:
+  ```bash
+  cd web
+  npm install
+  npm run dev
+  ```
+- **Features**: 3D interactive volatility surfaces, animated risk metrics, and glassmorphism UI.
+
+### Legacy Dashboard (Streamlit)
+The original Streamlit dashboard is available as a lightweight fallback in `/frontend`.
+- **Run Locally**:
+  ```bash
+  streamlit run frontend/streamlit_app.py
+  ```
+
 ## 🌐 Hosting & Deployment
 
 ### Backend (Vercel)
