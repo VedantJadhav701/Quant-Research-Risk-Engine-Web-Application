@@ -32,9 +32,8 @@ st.markdown("""
 
 import os
 
-# API Base URL (Local Backend or Production)
-# In Streamlit Cloud, set API_URL in 'Secrets' or 'Environment Variables'
-API_URL = os.getenv("API_URL", "http://localhost:8000")
+# API Base URL (Live Vercel Backend)
+API_URL = os.getenv("API_URL", "https://quant-research-risk-engine-web-appl-gules.vercel.app")
 
 # If using Streamlit Secrets (priority)
 try:
