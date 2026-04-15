@@ -1,96 +1,105 @@
-# 🛡️ Quant Research & Risk Engine
+# 🛡️ Quantum Research & Risk Engine
 
-A production-grade, modular financial analytics system that integrates market data ingestion, volatility surface modeling, machine learning regime detection, and adaptive fat-tailed Monte Carlo risk simulation.
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_svg)](https://quant-research-engine.streamlit.app/)
+[![Vercel Backend](https://img.shields.io/badge/Vercel-Backend-black?logo=vercel)](https://quant-research-risk-engine-web-appl-gules.vercel.app/)
+[![Python 3.12](https://img.shields.io/badge/Python-3.12-blue?logo=python)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## 🏗️ Architecture
+A high-performance, modular platform for **Regime-Aware Volatility Modeling** and **Monte Carlo Risk Simulations**. This engine combines machine learning for market state detection with advanced stochastic modeling to provide institutional-grade risk metrics.
 
-```mermaid
-graph TD
-    A[User Input / Dashboard] --> B[FastAPI Backend]
-    B --> C[Pipeline Manager]
-    C --> D[Data Ingestor]
-    D --> E[Regime Classifier]
-    E --> F[Volatility Engine]
-    F --> G[Risk Simulator]
-    G --> H[Consolidated Result]
-    H --> B
-    B --> A
-    
-    subgraph "Mathematical Models"
-    E -- "SVD + KMeans clustering" --> E1[Regime States]
-    F -- "Black-Scholes + Interpolation" --> F1[3D Surface]
-    G -- "Student-t Monte Carlo" --> G1[Simulated Paths]
-    end
-```
+---
 
-## 🚀 Quick Start
+## 🚀 Live Demo
+**👉 [Launch the Quantum Risk Dashboard](https://quant-research-engine.streamlit.app/)**
 
-### 1. Install Dependencies
-```bash
-pip install -r requirements.txt
-```
+---
 
-### 2. Start the Backend API
-```powershell
-# In PowerShell (Windows)
-$env:PYTHONPATH="."
-python -m backend.api.main
-```
-*The API will be available at http://localhost:8000*
+## 📸 Dashboard Preview
+![Quant Engine Screenshot](assets/Screenshot.png)
 
-### 3. Launch the Streamlit Dashboard
-```bash
-streamlit run frontend/streamlit_app.py
-```
-*The UI will open in your browser.*
+---
 
 ## 🧠 Key Features
 
-- **Context-Aware Pipeline**: The system detects the current market regime (High Vol, Low Vol, Trending) and automatically adjusts simulation parameters (degrees of freedom, volatility scaling) to reflect current risk levels.
-- **Advanced Volatility Engine**: Models the volatility surface with both term structure (time-dependency) and equity skew (strike-dependency).
-- **Fat-Tail Risk Modeling**: Uses Student-t distributions for Monte Carlo paths to capture "black swan" events better than standard Normal distributions.
-- **Modular API Design**: Fully decoupled frontend and backend, allowing for easy integration into larger trading systems.
+- **ML-Powered Regime Detection**: Uses Singular Value Decomposition (SVD) for dimensionality reduction and KMeans clustering to identify hidden market states (Low Vol, Trending, High Vol).
+- **Adaptive Risk Simulations**: Executes 10,000+ path Monte Carlo simulations using Student-t distributions that automatically adjust degrees of freedom ($\nu$) based on the detected market regime.
+- **3D Interactive Volatility Surfaces**: Visualizes the Implied Volatility Surface, modeling both the **Term Structure** (time to expiry) and the **Equity Skew** (strike price).
+- **Serverless Hybrid Architecture**: High-speed FastAPI backend deployed on Vercel linked to a responsive Streamlit Cloud frontend.
+- **Institutional Metrics**: Real-time calculation of Value at Risk (VaR 95%), Conditional VaR (CVaR), Sharpe Ratio, and Maximum Drawdown.
 
-## 📊 Endpoints
+---
 
-- `POST /analyze`: Main analysis endpoint. Accepts JSON with `ticker`, `start_date`, and `end_date`.
-- `POST /upload`: Upload a custom CSV for analysis.
-- `GET /result/{id}`: Retrieve past analysis results.
+## 🏗️ System Architecture
 
-## 🚀 User Interface
+```mermaid
+graph TD
+    User((User)) -->|Interacts| Streamlit[Streamlit Cloud Frontend]
+    Streamlit -->|REST API Request| FastAPI[FastAPI Backend - Vercel]
+    FastAPI -->|Data Fetching| YFinance[Yahoo Finance API]
+    FastAPI -->|ML Processing| Regime[ML Regime Classifier]
+    FastAPI -->|Stochastic Modeling| Risk[Monte Carlo Engine]
+    FastAPI -->|Surface Construction| Vol[Volatility Engine]
+    Regime -->|Insights| FastAPI
+    Risk -->|Metrics| FastAPI
+    Vol -->|3D Data| FastAPI
+    FastAPI -->|JSON Results| Streamlit
+    Streamlit -->|Interactive Plots| Plotly[Plotly.js Charts]
+```
 
-### Modern Dashboard (Next.js)
-The primary interface is a high-performance, responsive Next.js 14 dashboard located in the `/web` directory.
-- **Run Locally**:
-  ```bash
-  cd web
-  npm install
-  npm run dev
-  ```
-- **Features**: 3D interactive volatility surfaces, animated risk metrics, and glassmorphism UI.
+---
 
-### Legacy Dashboard (Streamlit)
-The original Streamlit dashboard is available as a lightweight fallback in `/frontend`.
-- **Run Locally**:
-  ```bash
-  streamlit run frontend/streamlit_app.py
-  ```
+## 📂 Repository Structure
 
-## 🌐 Hosting & Deployment
+```text
+├── api/                # Vercel Serverless Function entry point
+├── backend/            # Core Quant Engineering logic
+│   ├── data/           # Data ingestion & cleaning
+│   ├── regime/         # ML State Detection (SVD + KMeans)
+│   ├── risk/           # Monte Carlo & VaR Engine
+│   └── volatility/     # IV Surface modeling
+├── frontend/           # Streamlit UI implementation
+├── assets/             # Documentation visuals & screenshots
+├── requirements.txt    # Unified dependency list
+└── vercel.json         # Vercel deployment configuration
+```
 
-### Backend (Vercel)
-1.  **Preparation**: Ensure `vercel.json` and `api/index.py` are in the root.
-2.  **Deploy**: Connect your repository to Vercel and set the environment variable `PYTHONPATH="."`.
-3.  **URL**: Note your deployment URL (e.g., `https://your-app.vercel.app`).
+---
 
-### Frontend (Streamlit Cloud)
-1.  **Deploy**: Connect your repository to [Streamlit Cloud](https://streamlit.io/cloud).
-2.  **Secrets**: Open "Settings" -> "Secrets" and add your Vercel API URL:
-    ```toml
-    API_URL = "https://your-app.vercel.app"
-    ```
-3.  **Requirements**: Streamlit will automatically install dependencies from `requirements.txt`.
+## 🚀 Getting Started
 
-## ⚙️ Requirements
-- Python 3.8+
-- CPU-friendly (No GPU required for ML components)
+### Local Development
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/VedantJadhav701/Quant-Research-Risk-Engine-Web-Application.git
+   cd Quant-Research-Risk-Engine-Web-Application
+   ```
+
+2. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Run the Backend (Local)**:
+   ```bash
+   uvicorn api.index:app --reload
+   ```
+
+4. **Run the Frontend (Local)**:
+   ```bash
+   streamlit run frontend/streamlit_app.py
+   ```
+
+### Production Deployment
+- **Backend**: Auto-deployed to Vercel on push.
+- **Frontend**: Connect your GitHub repo to Streamlit Cloud and point the main file to `frontend/streamlit_app.py`.
+
+---
+
+## ⚠️ Disclaimer
+**This project is for educational and research purposes only.** It does not constitute financial advice. Trading involves substantial risk of loss. The authors are not responsible for any financial losses incurred from the use of this code.
+
+---
+
+## 👨‍💻 Author
+**Vedant Jadhav** - *Financial Engineer & AI Researcher*
